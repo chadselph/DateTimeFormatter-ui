@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import scala.util.Try
 
-object DateTimeFormatterSymbols {
+object DateTimeFormatterSymbols:
   case class DtfSymbol(
       symbol: Char,
       meaning: String,
@@ -60,15 +60,4 @@ object DateTimeFormatterSymbols {
     DtfSymbol('x', "zone-offset", maxCount = 5),
     DtfSymbol('Z', "zone offset", maxCount = 5)
   )
-  val test =
-    """
-      |p	pad next	pad modifier	1
-      |	escape for text	delimiter
-      |'	single quote	literal
-      |[	optional section start
-      |]	optional section end
-      |#	reserved for future use
-      |{	reserved for future use
-      |}	reserved for future use		""".stripMargin
 
-}
