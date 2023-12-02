@@ -32,7 +32,7 @@ jobs:
       - name: setup jvm/scala
         uses: coursier/setup-action@v1
         with:
-          jvm: adopt:17
+          jvm: adoptium:17
       - name: Install dependencies
         run: sbt fastLinkJS && npm ci && npm run build
       - name: Upload artifact
