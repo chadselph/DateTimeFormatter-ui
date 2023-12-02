@@ -34,10 +34,7 @@ jobs:
         with:
           jvm: adopt:17
       - name: Install dependencies
-        run:
-          - sbt fastLinkJS
-          - npm ci
-          - npm run build
+        run: sbt fastLinkJS && npm ci && npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
