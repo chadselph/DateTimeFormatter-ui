@@ -12,13 +12,11 @@ import org.scalajs.dom.HTMLDivElement
 import scala.jdk.CollectionConverters.*
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
-import scala.List
 import scala.util.Try
 
 @main
 def UI(): Unit = {
   lazy val container = dom.document.getElementById("app")
-  println("Did it work??")
   render(container, Main.App())
 }
 
@@ -29,7 +27,7 @@ object Main {
   def RenderedDateTime(dt: Signal[ZonedDateTime], formatter: Signal[Option[DateTimeFormatter]]) = {
     val rendered =
       dt.combineWith(formatter).map((zdt, formatter) => formatter.map(_.format(zdt)).getOrElse(""))
-    div(p(child.text <-- rendered, List(fontSize := "2.5rem", fontFamily := "monospace")))
+    div(p(child.text <-- rendered, fontSize := "2.5rem", fontFamily := "monospace"))
   }
 
   def App(): ReactiveHtmlElement[HTMLDivElement] = {
@@ -40,12 +38,8 @@ object Main {
 
     div(
       PatternTable(date),
-      div(
-        inputElement,
-        PatternStringInput(pattern, dtf, validDtf, date),
-        List(cls := "right-panel")
-      ),
-      List(display := "flex")
+      div(inputElement, PatternStringInput(pattern, dtf, validDtf, date), cls := "right-panel"),
+      display := "flex"
     )
   }
 
@@ -54,20 +48,21 @@ object Main {
       dtf: Signal[Try[DateTimeFormatter]],
       validDtf: Signal[Option[DateTimeFormatter]],
       zdtInput: Signal[ZonedDateTime]
-  ) = {
+  ): ReactiveHtmlElement[HTMLDivElement] = {
     val patternParseError = dtf.map(_.failed.map(_.getMessage).toOption)
     div(
       "DateTimeFormatter.ofPattern(",
       Input(
         value <-- pattern,
         onInput.mapToValue --> pattern,
-        List(borderColor <-- validDtf.map(f => if f.isDefined then "" else "red"))
+        borderColor <-- validDtf.map(f => if f.isDefined then "" else "red")
       ),
       ").format(...)",
       div(
         div(child.maybe <-- patternParseError.map(_.map(parserError))),
         RenderedDateTime(zdtInput, validDtf),
-        List(height := "400px", overflow := "break")
+        height := "400px",
+        overflow := "break"
       )
     )
 
@@ -104,9 +99,9 @@ object Main {
             _.name := "choose-input",
             _.events.onChange.mapToChecked
               .filter(identity)
-              .mapTo(false) --> specificTimeSelected.writer
+              .mapTo(false) --> specificTimeSelected
           ),
-          Icon(_.name := IconName.`fob-watch`, List(width := "3rem", height := "3rem"))
+          Icon(_.name := IconName.`fob-watch`, width := "3rem", height := "3rem")
         ),
         div(
           RadioButton(
@@ -116,7 +111,7 @@ object Main {
             _.name := "choose-input",
             _.events.onChange.mapToChecked
               .filter(identity)
-              .mapTo(true) --> specificTimeSelected.writer
+              .mapTo(true) --> specificTimeSelected
           ),
           JavaDateTimePicker(selectedZoneDateTime, specificTimeSelected.signal.map(!_))
         )
@@ -137,7 +132,7 @@ object Main {
       _.value := value.now().format(IsoDTFormatter),
       _.events.onChange
         .map(_.detail.value)
-        .map(str => LocalDateTime.parse(str, IsoDTFormatter)) --> value.writer,
+        .map(str => LocalDateTime.parse(str, IsoDTFormatter)) --> value,
       disabled <-- disabledS
     )
 
@@ -156,7 +151,7 @@ object Main {
           Table.row(
             _.cell(symbol.symbol),
             _.cell(symbol.meaning),
-            _.cell(child <-- now.map(symbol.examples))
+            _.cell(child.text <-- now.map(symbol.examples))
           )
         )
       )
